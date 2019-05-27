@@ -7,11 +7,13 @@ public class GraphProperties
 	private int diameter;
 	private int radius;
 	private int center;
+	private int girth;
 	
 	GraphProperties(Graph G) {
 		int V = G.V();
 		eccentricity = new int[V];
-		int[] distTo = new int[V];
+		int[] distTo = new int[V];		
+		girth = Integer.MAX_VALUE;		
 		
 		for (int c = 0; c < V; c++) {
 			for (int i = 0; i < V; i++) distTo[i] = -1;
@@ -19,15 +21,16 @@ public class GraphProperties
 			queue.enqueue(c);
 			distTo[c] = 0;
 			while (!queue.isEmpty()) {
-				int v = queue.dequeue();				
-				for (int w : G.adj(v))
+				int v = queue.dequeue();
+				for (int w : G.adj(v)) {
 					if (distTo[w] == -1) {
 						queue.enqueue(w);
 						distTo[w] = distTo[v] + 1;
 					}
-				if (queue.isEmpty()) eccentricity[c] = distTo[v];
+					if (w == c && distTo[v]+1 < girth) girth = distTo[v] + 1;
+				}
+				if (queue.isEmpty()) eccentricity[c] = distTo[v]; // Last vertex in queue is the most remote one
 			}
-			
 		}
 		diameter = eccentricity[0];
 		radius = eccentricity[0];
@@ -49,4 +52,5 @@ public class GraphProperties
 	
 	int center() { return center; }
 
+	int girth() { return girth; }
 }
